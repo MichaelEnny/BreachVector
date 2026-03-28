@@ -10,9 +10,6 @@ The project is designed to stay demoable in two modes:
 ## Submission kit
 
 - User guide: [docs/user-guide.md](./docs/user-guide.md)
-- Demo script: [docs/demo-script.md](./docs/demo-script.md)
-- Screenshot shot list: [docs/screenshot-shot-list.md](./docs/screenshot-shot-list.md)
-- Deployment verification notes: [docs/deployment-verification.md](./docs/deployment-verification.md)
 
 ## Why this stands out
 
