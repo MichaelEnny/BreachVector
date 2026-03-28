@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:www.oreateai.com)",
+      "WebFetch(domain:digi-tx.com)",
+      "WebFetch(domain:medium.com)",
+      "WebFetch(domain:bungalowwebdesign.com)",
+      "WebFetch(domain:framerbite.com)",
+      "WebFetch(domain:dev.to)",
+      "WebFetch(domain:motiontactic.com)",
+      "WebFetch(domain:www.soliddigital.com)",
+      "WebFetch(domain:www.alfdesigngroup.com)",
+      "WebFetch(domain:www.925studios.co)",
+      "WebFetch(domain:blog.logrocket.com)",
+      "WebFetch(domain:saaspo.com)",
+      "WebFetch(domain:www.cyberoptik.net)",
+      "WebFetch(domain:piktochart.com)",
+      "WebFetch(domain:produkto.io)"
+    ]
+  }
+}
