@@ -14,10 +14,10 @@ export async function AppHeader() {
 
   return (
     <header className="sticky top-0 z-40 print:hidden">
-      <div className="absolute inset-0 border-b border-white/[0.06] bg-[rgba(4,8,20,0.82)] backdrop-blur-2xl" />
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-300/20 to-transparent" />
+      <div className="pointer-events-none absolute inset-0 border-b border-white/[0.06] bg-[rgba(4,8,20,0.82)] backdrop-blur-2xl" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-300/20 to-transparent" />
 
-      <div className="container relative py-4">
+      <div className="container relative z-10 py-4">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex min-w-0 flex-1 items-center gap-6">
             <Link href="/" className="group flex min-w-0 items-center gap-3">

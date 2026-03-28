@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type { Route } from "next";
-import { SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
+import { UserButton } from "@clerk/nextjs";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -21,14 +21,12 @@ export function AuthControls({
   if (!signedIn) {
     return (
       <div className="flex flex-wrap items-center gap-2">
-        <SignInButton mode="modal">
-          <Button variant="secondary" size="sm">
-            Sign in
-          </Button>
-        </SignInButton>
-        <SignUpButton mode="modal">
-          <Button size="sm">Create account</Button>
-        </SignUpButton>
+        <Button asChild variant="secondary" size="sm">
+          <Link href={"/sign-in" as Route}>Sign in</Link>
+        </Button>
+        <Button asChild size="sm">
+          <Link href={"/sign-up" as Route}>Create account</Link>
+        </Button>
       </div>
     );
   }
