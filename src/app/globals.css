@@ -1,0 +1,176 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 34% 7%;
+    --foreground: 210 25% 96%;
+    --card: 216 32% 10%;
+    --card-foreground: 210 20% 96%;
+    --primary: 183 83% 63%;
+    --primary-foreground: 216 55% 9%;
+    --secondary: 214 26% 17%;
+    --secondary-foreground: 210 18% 93%;
+    --muted: 217 20% 14%;
+    --muted-foreground: 214 13% 70%;
+    --accent: 160 78% 61%;
+    --accent-foreground: 214 50% 10%;
+    --border: 214 20% 22%;
+    --ring: 183 77% 64%;
+    --success: 152 70% 55%;
+    --warning: 39 92% 57%;
+    --danger: 354 88% 65%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-body), sans-serif;
+    background:
+      radial-gradient(circle at 12% 12%, rgba(94, 234, 212, 0.18), transparent 24%),
+      radial-gradient(circle at 88% 14%, rgba(56, 189, 248, 0.16), transparent 28%),
+      radial-gradient(circle at 50% 78%, rgba(16, 185, 129, 0.1), transparent 34%),
+      linear-gradient(180deg, #07111c 0%, #081019 38%, #050910 100%);
+    color: hsl(var(--foreground));
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    background-size: 72px 72px;
+    mask-image: radial-gradient(circle at center, black 32%, transparent 82%);
+    opacity: 0.5;
+    z-index: -2;
+  }
+
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(120deg, rgba(255, 255, 255, 0.035), transparent 22%),
+      repeating-linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.012) 0,
+        rgba(255, 255, 255, 0.012) 1px,
+        transparent 1px,
+        transparent 12px
+      );
+    opacity: 0.18;
+    z-index: -1;
+  }
+
+  ::selection {
+    background: rgba(94, 234, 212, 0.3);
+    color: white;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .font-heading {
+    font-family: var(--font-heading), sans-serif;
+  }
+}
+
+@layer components {
+  .panel {
+    @apply rounded-[32px] border border-white/10 bg-white/[0.055] shadow-lens backdrop-blur-xl;
+  }
+
+  .panel-strong {
+    @apply rounded-[36px] border border-cyan-300/15 bg-slate-950/70 shadow-glow backdrop-blur-2xl;
+  }
+
+  .panel-muted {
+    @apply rounded-[28px] border border-white/10 bg-black/20 backdrop-blur-md;
+  }
+
+  .section-kicker {
+    @apply text-[11px] uppercase tracking-[0.38em];
+    color: rgba(186, 230, 253, 0.72);
+  }
+
+  .metric-value {
+    @apply font-heading text-3xl text-white md:text-4xl;
+  }
+
+  .data-label {
+    @apply text-[11px] uppercase tracking-[0.26em];
+    color: rgba(255, 255, 255, 0.38);
+  }
+
+  .intel-card {
+    @apply rounded-[26px] border border-white/10 bg-black/20 p-4 backdrop-blur-md;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  .status-lamp {
+    @apply inline-flex h-2.5 w-2.5 rounded-full;
+  }
+}
+
+@layer utilities {
+  .surface-grid {
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  .surface-radial {
+    background:
+      radial-gradient(circle at top, rgba(94, 234, 212, 0.16), transparent 32%),
+      radial-gradient(circle at 82% 28%, rgba(34, 211, 238, 0.14), transparent 26%),
+      linear-gradient(180deg, rgba(9, 17, 29, 0.92), rgba(5, 10, 18, 0.96));
+  }
+
+  .mesh-border {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.05),
+      0 0 0 1px rgba(130, 246, 228, 0.08),
+      0 32px 80px rgba(2, 8, 20, 0.4);
+  }
+
+  .scanline {
+    position: relative;
+  }
+
+  .scanline::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.03), transparent);
+    background-size: 100% 12px;
+    opacity: 0.18;
+    mix-blend-mode: screen;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, #f8fafc 0%, #c3fbf4 40%, #7dd3fc 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}

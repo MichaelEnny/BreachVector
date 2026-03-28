@@ -1,0 +1,270 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum ScanOrigin {
+  LIVE
+  DEMO
+}
+
+enum ScanStatus {
+  COMPLETED
+  FAILED
+}
+
+enum Severity {
+  INFO
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum ShareAccess {
+  PRIVATE
+  PUBLIC
+}
+
+enum WorkspaceType {
+  PERSONAL
+  TEAM
+}
+
+enum WorkspaceRole {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+}
+
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  REVOKED
+  EXPIRED
+}
+
+enum ScanJobStatus {
+  QUEUED
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum AuditEventAction {
+  SCAN_REQUESTED
+  SCAN_STARTED
+  SCAN_COMPLETED
+  SCAN_FAILED
+  SCAN_REUSED
+  SCAN_RETRIED
+  SHARE_CREATED
+  SHARE_REVOKED
+  SHARE_OPENED
+  REPORT_EXPORTED
+  RATE_LIMIT_TRIGGERED
+  WORKSPACE_CREATED
+  WORKSPACE_SWITCHED
+  INVITE_CREATED
+  INVITE_ACCEPTED
+  INVITE_REVOKED
+  INVITE_REFRESHED
+  MEMBER_ROLE_UPDATED
+  MEMBER_REMOVED
+}
+
+model Organization {
+  id              String            @id @default(cuid())
+  slug            String            @unique
+  name            String
+  type            WorkspaceType     @default(TEAM)
+  description     String?
+  createdByUserId String
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  memberships     Membership[]
+  invites         WorkspaceInvite[]
+  scans           Scan[]
+  jobs            ScanJob[]
+  auditEvents     AuditEvent[]
+
+  @@index([createdByUserId, createdAt])
+}
+
+model Membership {
+  id             String        @id @default(cuid())
+  organizationId String
+  userId         String
+  displayName    String?
+  emailAddress   String?
+  role           WorkspaceRole @default(MEMBER)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+  @@index([userId, createdAt])
+}
+
+model WorkspaceInvite {
+  id             String        @id @default(cuid())
+  organizationId String
+  invitedByUserId String
+  emailAddress   String
+  displayName    String?
+  role           WorkspaceRole @default(MEMBER)
+  token          String        @unique
+  status         InviteStatus  @default(PENDING)
+  acceptedByUserId String?
+  acceptedAt     DateTime?
+  revokedAt      DateTime?
+  expiresAt      DateTime
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, createdAt])
+  @@index([emailAddress, createdAt])
+  @@index([token])
+}
+
+model Scan {
+  id               String        @id @default(cuid())
+  ownerUserId      String?
+  organizationId   String?
+  targetInput      String
+  normalizedUrl    String
+  hostname         String
+  origin           ScanOrigin    @default(LIVE)
+  status           ScanStatus    @default(COMPLETED)
+  overallScore     Int
+  executiveSummary String
+  signalSnapshot   Json
+  errorMessage     String?
+  createdAt        DateTime      @default(now())
+  completedAt      DateTime?
+  organization     Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  report           Report?
+  findings         Finding[]
+  shareLink        ScanShare?
+  exports          ReportExport[]
+  auditEvents      AuditEvent[]
+  resultJobs       ScanJob[]     @relation("JobResultScan")
+
+  @@index([ownerUserId, createdAt])
+  @@index([organizationId, createdAt])
+  @@index([normalizedUrl, createdAt])
+}
+
+model Finding {
+  id             String   @id @default(cuid())
+  scanId         String
+  title          String
+  severity       Severity
+  category       String
+  summary        String
+  evidence       String?
+  recommendation String
+  displayOrder   Int      @default(0)
+  scan           Scan     @relation(fields: [scanId], references: [id], onDelete: Cascade)
+}
+
+model Report {
+  id                 String   @id @default(cuid())
+  scanId             String   @unique
+  technicalNarrative String
+  remediationPlan    Json
+  plainEnglish       Json
+  generatedByAi      Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  scan               Scan     @relation(fields: [scanId], references: [id], onDelete: Cascade)
+}
+
+model ScanShare {
+  id             String      @id @default(cuid())
+  scanId         String      @unique
+  ownerUserId    String
+  token          String      @unique
+  access         ShareAccess @default(PRIVATE)
+  accessCount    Int         @default(0)
+  lastAccessedAt DateTime?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  revokedAt      DateTime?
+  scan           Scan        @relation(fields: [scanId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([ownerUserId, createdAt])
+}
+
+model ReportExport {
+  id          String   @id @default(cuid())
+  scanId      String
+  ownerUserId String
+  format      String
+  createdAt   DateTime @default(now())
+  scan        Scan     @relation(fields: [scanId], references: [id], onDelete: Cascade)
+
+  @@index([scanId, createdAt])
+  @@index([ownerUserId, createdAt])
+}
+
+model ScanJob {
+  id              String        @id @default(cuid())
+  ownerUserId     String
+  organizationId  String
+  targetInput     String
+  normalizedUrl   String
+  hostname        String
+  dedupeKey       String
+  status          ScanJobStatus @default(QUEUED)
+  progressLabel   String?
+  errorMessage    String?
+  attemptCount    Int           @default(0)
+  resultScanId    String?
+  availableAt     DateTime      @default(now())
+  leaseToken      String?
+  leaseExpiresAt  DateTime?
+  workerId        String?
+  createdAt       DateTime      @default(now())
+  startedAt       DateTime?
+  completedAt     DateTime?
+  lastHeartbeatAt DateTime?
+  durationMs      Int?
+  organization    Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  resultScan      Scan?         @relation("JobResultScan", fields: [resultScanId], references: [id], onDelete: SetNull)
+  auditEvents     AuditEvent[]
+
+  @@index([ownerUserId, createdAt])
+  @@index([organizationId, createdAt])
+  @@index([status, availableAt])
+  @@index([workerId, leaseExpiresAt])
+  @@index([status, createdAt])
+  @@index([dedupeKey, createdAt])
+}
+
+model AuditEvent {
+  id             String           @id @default(cuid())
+  actorUserId    String?
+  organizationId String?
+  scanId         String?
+  jobId          String?
+  action         AuditEventAction
+  target         String?
+  detail         String?
+  meta           Json?
+  createdAt      DateTime         @default(now())
+  organization   Organization?    @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  scan           Scan?            @relation(fields: [scanId], references: [id], onDelete: SetNull)
+  job            ScanJob?         @relation(fields: [jobId], references: [id], onDelete: SetNull)
+
+  @@index([actorUserId, createdAt])
+  @@index([organizationId, createdAt])
+  @@index([action, createdAt])
+}
